@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Omniorder::VERSION
   spec.authors       = ["Howard Wilson"]
   spec.email         = ["howard@watsonbox.net"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Import online orders from various channels for fulfillment.}
+  spec.description   = %q{Import online orders from various channels for fulfillment.}
   spec.homepage      = ""
   spec.license       = "MIT"
 

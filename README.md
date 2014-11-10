@@ -1,28 +1,37 @@
 # Omniorder
 
-TODO: Write a gem description
+Import online orders from various channels for fulfillment.
+
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'omniorder'
+```ruby
+gem 'omniorder'
+```
 
 And then execute:
 
-    $ bundle
+```bash
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install omniorder
+```bash
+$ gem install omniorder
+```
+
 
 ## Usage
 
 TODO: Write usage instructions here
 
+
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/omniorder/fork )
+1. Fork it ( https://github.com/watsonbox/omniorder/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
