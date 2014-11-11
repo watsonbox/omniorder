@@ -3,6 +3,8 @@ require "net/https"
 require "crack"
 
 require "omniorder/version"
+require "omniorder/customerable"
+require "omniorder/customer"
 require "omniorder/purchasable"
 require "omniorder/product"
 require "omniorder/orderable"
@@ -15,6 +17,7 @@ module Omniorder
   class << self
     attr_writer :order_type
     attr_writer :order_product_type
+    attr_writer :customer_type
     attr_writer :product_type
 
     def order_type
@@ -27,6 +30,12 @@ module Omniorder
       @order_product_type || OrderProduct
     rescue NameError
       raise "Please set Omniorder#order_product_type"
+    end
+
+    def customer_type
+      @customer_type || Customer
+    rescue NameError
+      raise "Please set Omniorder#customer_type"
     end
 
     def product_type

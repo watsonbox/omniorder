@@ -30,7 +30,7 @@ describe Omniorder::ImportStrategy::Groupon do
     }.to raise_exception "Omniorder::ImportStrategy::Groupon requires an access_token"
   end
 
-  it 'imports orders with products' do
+  it 'imports orders with products and a customer' do
     orders = []
     strategy.import_orders { |o| orders << o }
 
@@ -43,5 +43,15 @@ describe Omniorder::ImportStrategy::Groupon do
     order_product = order.order_products.first
     expect(order_product.quantity).to eq(3)
     expect(order_product.product.code).to eq('03658246')
+
+    customer = order.customer
+    expect(customer.name).to eq("SOME BODY HERE")
+    expect(customer.phone).to eq("01234 982103")
+    expect(customer.address1).to eq("901")
+    expect(customer.address2).to eq("GREENFIELDS LANE")
+    expect(customer.address3).to eq("BRADFORD")
+    expect(customer.address4).to eq("KENT")
+    expect(customer.postcode).to eq("SOME ZIP")
+    expect(customer.country).to eq("UK")
   end
 end

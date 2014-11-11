@@ -1,13 +1,18 @@
 module Omniorder
-  class Order
-    include Orderable
+  class Customer
+    include Customerable
 
     ATTRIBUTES = [
-      :customer,
-      :order_products,
-      :order_number,
-      :total_price,
-      :date
+      :username,
+      :name,
+      :phone,
+      :email,
+      :address1,
+      :address2,
+      :address3,
+      :address4,
+      :postcode,
+      :country
     ]
 
     attr_accessor *ATTRIBUTES
@@ -19,8 +24,6 @@ module Omniorder
           send("#{attribute}=", value)
         end
       end
-
-      self.order_products ||= []
     end
   end
 end

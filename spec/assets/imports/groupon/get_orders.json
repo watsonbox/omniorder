@@ -9,10 +9,10 @@
         "orderid": "FFB7A681BE",
         "customer": {
             "city": "BRADFORD",
-            "state": null,
+            "state": "KENT",
             "name": "SOME BODY HERE",
             "zip": "SOME ZIP",
-            "country": null,
+            "country": "UK",
             "address1": "901",
             "address2": "GREENFIELDS LANE",
             "phone": "01234 982103"

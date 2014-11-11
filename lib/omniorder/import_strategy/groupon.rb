@@ -1,5 +1,7 @@
 module Omniorder
   module ImportStrategy
+    # Groupon Import Strategy
+    # See: https://scm.commerceinterface.com/api-doc/v2/
     class Groupon
       API_URL = "https://scm.commerceinterface.com/api/v2"
 
@@ -32,6 +34,7 @@ module Omniorder
 
       def create_order(order_info)
         order = Omniorder.order_type.new(
+          :customer => create_customer(order_info['customer']),
           :order_number => order_info['orderid'],
           :total_price => order_info['amount']['total'].to_f,
           :date => DateTime.strptime(order_info['date'], '%m/%d/%Y %I:%M%p UTC')
@@ -44,6 +47,21 @@ module Omniorder
         order
       end
 
+      def create_customer(customer_info)
+        # NOTE: Can't find existing customer as no username or email given
+        Omniorder.customer_type.new(
+          :name => customer_info['name'],
+          :phone => customer_info['phone'],
+          :address1 => customer_info['address1'],
+          :address2 => customer_info['address2'],
+          :address3 => customer_info['city'],
+          :address4 => customer_info['state'],
+          :postcode => customer_info['zip'].to_s.squeeze(' ').upcase,
+          :country => customer_info['country']
+        )
+      end
+
+      # NOTE: We don't appear to get an email address for customers
       def get_order_info
         Crack::JSON.parse do_request(get_orders_url)
       end
