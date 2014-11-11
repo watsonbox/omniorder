@@ -3,7 +3,7 @@ require "net/https"
 require "crack"
 
 require "omniorder/version"
-require "omniorder/productable"
+require "omniorder/purchasable"
 require "omniorder/product"
 require "omniorder/orderable"
 require "omniorder/order"

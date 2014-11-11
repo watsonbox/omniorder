@@ -1,5 +1,5 @@
 module Omniorder
-  module Productable
+  module Purchasable
     def <=>(other)
       code <=> other.code
     end

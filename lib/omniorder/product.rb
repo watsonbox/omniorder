@@ -1,6 +1,6 @@
 module Omniorder
   class Product < Struct.new(:code)
-    include Productable
+    include Purchasable
 
     ATTRIBUTES = [
       :code
