@@ -1,25 +1,11 @@
 module Omniorder
-  class Order
+  class Order < Entity
     include Orderable
 
-    ATTRIBUTES = [
-      :customer,
-      :order_products,
-      :order_number,
-      :total_price,
-      :date
-    ]
-
-    attr_accessor *ATTRIBUTES
+    attributes :customer, :order_products, :order_number, :total_price, :date
 
     def initialize(attributes = {})
-      # Initialize known attributes
-      attributes.each do |attribute, value|
-        if ATTRIBUTES.include?(attribute.to_sym)
-          send("#{attribute}=", value)
-        end
-      end
-
+      super
       self.order_products ||= []
     end
   end
