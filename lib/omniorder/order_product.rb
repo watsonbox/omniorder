@@ -1,12 +1,10 @@
 module Omniorder
-  class Order
-    include Orderable
+  class OrderProduct
+    include OrderProductable
 
     ATTRIBUTES = [
-      :order_products,
-      :order_number,
-      :total_price,
-      :date
+      :product,
+      :quantity
     ]
 
     attr_accessor *ATTRIBUTES
@@ -18,8 +16,6 @@ module Omniorder
           send("#{attribute}=", value)
         end
       end
-
-      self.order_products ||= []
     end
   end
 end

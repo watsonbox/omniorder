@@ -31,11 +31,17 @@ module Omniorder
       private
 
       def create_order(order_info)
-        Omniorder.order_type.new(
+        order = Omniorder.order_type.new(
           :order_number => order_info['orderid'],
           :total_price => order_info['amount']['total'].to_f,
           :date => DateTime.strptime(order_info['date'], '%m/%d/%Y %I:%M%p UTC')
         )
+
+        order_info['line_items'].each do |line_item_info|
+          order.add_product_by_code(line_item_info['sku'].to_s, line_item_info['quantity'].to_i)
+        end
+
+        order
       end
 
       def get_order_info

@@ -1,12 +1,9 @@
 module Omniorder
-  class Order
-    include Orderable
+  class Product < Struct.new(:code)
+    include Productable
 
     ATTRIBUTES = [
-      :order_products,
-      :order_number,
-      :total_price,
-      :date
+      :code
     ]
 
     attr_accessor *ATTRIBUTES
@@ -18,8 +15,11 @@ module Omniorder
           send("#{attribute}=", value)
         end
       end
+    end
 
-      self.order_products ||= []
+    # This implementation assumes the product to exist
+    def self.find_by_code(code)
+      new(:code => code)
     end
   end
 end
