@@ -17,7 +17,7 @@ module Omniorder
 
     def add_product_by_code(code, quantity = 1)
       Omniorder.product_type.find_by_code(code).tap do |product|
-        add_product product, quantity
+        add_product product, quantity unless product.nil?
       end
     end
   end
