@@ -2,14 +2,14 @@ module Omniorder
   module ImportStrategy
     # Groupon Import Strategy
     # See: https://scm.commerceinterface.com/api-doc/v2/
-    class Groupon
       API_URL = "https://scm.commerceinterface.com/api/v2"
+    class Groupon < Base
 
       attr_accessor :options
       attr_accessor :supplier_id, :access_token
 
-      def initialize(options = {})
-        self.options = options
+      def initialize(import, options = {})
+        super
 
         unless self.supplier_id = options[:supplier_id] and !supplier_id.to_s.empty?
           raise "Omniorder::ImportStrategy::Groupon requires a supplier_id"
@@ -33,12 +33,13 @@ module Omniorder
       private
 
       def create_order(order_info)
-        order = Omniorder.order_type.new(
-          :customer => create_customer(order_info['customer']),
+        order = import.build_order(
           :order_number => order_info['orderid'],
           :total_price => order_info['amount']['total'].to_f,
           :date => DateTime.strptime(order_info['date'], '%m/%d/%Y %I:%M%p UTC')
         )
+
+        order.customer = create_customer(order, order_info['customer'])
 
         order_info['line_items'].each do |line_item_info|
           order.add_product_by_code(line_item_info['sku'].to_s, line_item_info['quantity'].to_i)
@@ -47,9 +48,9 @@ module Omniorder
         order
       end
 
-      def create_customer(customer_info)
+      def create_customer(order, customer_info)
         # NOTE: Can't find existing customer as no username or email given
-        Omniorder.customer_type.new(
+        order.build_customer(
           :name => customer_info['name'],
           :phone => customer_info['phone'],
           :address1 => customer_info['address1'],

@@ -12,6 +12,8 @@ require "omniorder/orderable"
 require "omniorder/order"
 require "omniorder/order_productable"
 require "omniorder/order_product"
+require "omniorder/import"
+require "omniorder/import_strategy/base"
 require "omniorder/import_strategy/groupon"
 
 module Omniorder
@@ -27,12 +29,6 @@ module Omniorder
       raise "Please set Omniorder#order_type"
     end
 
-    def order_product_type
-      @order_product_type || OrderProduct
-    rescue NameError
-      raise "Please set Omniorder#order_product_type"
-    end
-
     def customer_type
       @customer_type || Customer
     rescue NameError
@@ -43,6 +39,12 @@ module Omniorder
       @product_type || Product
     rescue NameError
       raise "Please set Omniorder#product_type"
+    end
+
+    def order_product_type
+      @order_product_type || OrderProduct
+    rescue NameError
+      raise "Please set Omniorder#order_product_type"
     end
   end
 end

@@ -2,6 +2,9 @@ module Omniorder
   # Represents common order behavior
   # Include Omniorder::Orderable in your Order class to make it Omniorder compatible.
   module Orderable
+    def build_customer(attributes = {})
+      Omniorder.customer_type.new(attributes)
+    end
     def add_product(product, quantity = 1)
       order_product = order_products.to_a.find { |op| op.product == product }
 

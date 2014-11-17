@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe Omniorder::ImportStrategy::Groupon do
+  let(:import) { Omniorder::Import.new }
   let(:strategy) do
     Omniorder::ImportStrategy::Groupon.new(
+      import,
       :supplier_id => '1',
       :access_token => 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT'
     )
@@ -20,13 +22,13 @@ describe Omniorder::ImportStrategy::Groupon do
 
   it 'raises an exception unless a supplier_id option is supplied' do
     expect {
-      Omniorder::ImportStrategy::Groupon.new(:access_token => 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT')
+      Omniorder::ImportStrategy::Groupon.new(import, :access_token => 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT')
     }.to raise_exception "Omniorder::ImportStrategy::Groupon requires a supplier_id"
   end
 
   it 'raises an exception unless an access_token option is supplied' do
     expect {
-      Omniorder::ImportStrategy::Groupon.new(:supplier_id => '1')
+      Omniorder::ImportStrategy::Groupon.new(import, :supplier_id => '1')
     }.to raise_exception "Omniorder::ImportStrategy::Groupon requires an access_token"
   end
 
