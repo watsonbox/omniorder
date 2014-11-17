@@ -15,6 +15,16 @@ module Omniorder
       def after_import
 
       end
+
+      private
+
+      def customer_country_or_default(country)
+        if country.nil? || country.empty?
+          Omniorder.default_customer_country
+        else
+          country
+        end
+      end
     end
   end
 end

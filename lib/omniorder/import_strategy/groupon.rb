@@ -58,7 +58,7 @@ module Omniorder
           :address3 => customer_info['city'],
           :address4 => customer_info['state'],
           :postcode => customer_info['zip'].to_s.squeeze(' ').upcase,
-          :country => customer_info['country']
+          :country => customer_country_or_default(customer_info['country'])
         )
       end
 

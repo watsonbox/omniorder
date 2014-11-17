@@ -22,6 +22,7 @@ module Omniorder
     attr_writer :order_product_type
     attr_writer :customer_type
     attr_writer :product_type
+    attr_writer :default_customer_country
 
     def order_type
       @order_type || Order
@@ -45,6 +46,10 @@ module Omniorder
       @order_product_type || OrderProduct
     rescue NameError
       raise "Please set Omniorder#order_product_type"
+    end
+
+    def default_customer_country
+      @default_customer_country || 'United Kingdom'
     end
   end
 end
