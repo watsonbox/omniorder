@@ -7,9 +7,9 @@ describe Omniorder::Orderable do
     it 'adds a product to the order when one is found' do
       product = Omniorder::Product.new(:code => 'CODE1')
 
-      expect(Omniorder::Product).to receive(:find_by_code).
-        with('CODE1').
-        and_return(product)
+      expect(Omniorder::Product).to receive(:find_by_code)
+        .with('CODE1')
+        .and_return(product)
 
       order.add_product_by_code('CODE1')
 
