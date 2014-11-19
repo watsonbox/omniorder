@@ -22,5 +22,14 @@ module Omniorder
         add_product product, quantity unless product.nil?
       end
     end
+
+    def product_count
+      order_products.inject(0) { |sum, op| sum + op.quantity }
+    end
+
+    # Human-readable string representing order products
+    def product_list
+      order_products.sort.map(&:to_s).join('/')
+    end
   end
 end
