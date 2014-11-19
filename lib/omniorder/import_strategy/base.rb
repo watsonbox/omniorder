@@ -16,6 +16,10 @@ module Omniorder
         def clear_options
           @options = nil
         end
+
+        def from_name(name)
+          Utils.constantize "Omniorder::ImportStrategy::#{Utils.camelize name}"
+        end
       end
 
       def initialize(import, options = {})

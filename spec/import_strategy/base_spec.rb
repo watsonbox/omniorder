@@ -14,4 +14,10 @@ describe Omniorder::ImportStrategy::Base do
       expect(strategy_class.new(nil, local_option: true).options).to eq(global_option: true, local_option: true)
     end
   end
+
+  describe '.from_name' do
+    it 'selects a specific strategy from its name' do
+      expect(Omniorder::ImportStrategy::Base.from_name(:groupon)).to eq(Omniorder::ImportStrategy::Groupon)
+    end
+  end
 end
