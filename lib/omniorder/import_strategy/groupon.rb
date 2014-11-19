@@ -22,12 +22,25 @@ module Omniorder
 
       def import_orders
         get_order_info['data'].to_a.each do |order_info|
-          yield create_order(order_info)
+          success = yield create_order(order_info)
+
+          if success && options[:mark_exported]
+            result = Crack::JSON.parse do_request(mark_exported_url(order_info), :post)
+
+            unless result['success']
+              raise "Failed to mark Groupon order ##{order_info['orderid']} as exported"
+            end
+          end
         end
       end
 
       def get_orders_url
         URI.join(API_URL, "get_orders?supplier_id=#{supplier_id}&token=#{access_token}")
+      end
+
+      def mark_exported_url(order_info)
+        lids = order_info['line_items'].map { |li| li["ci_lineitemid"] }
+        URI.join(API_URL, "mark_exported?supplier_id=#{supplier_id}&token=#{access_token}&ci_lineitem_ids=[#{lids.join(',')}]")
       end
 
       private
@@ -69,12 +82,12 @@ module Omniorder
 
       private
 
-      def do_request(url)
+      def do_request(url, type = :get)
         uri = URI(url)
         http = Net::HTTP.new(uri.host, 443)
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        http.request(Net::HTTP::Get.new(uri.request_uri)).body
+        http.request((type == :post ? Net::HTTP::Post : Net::HTTP::Get).new(uri.request_uri)).body
       end
     end
   end

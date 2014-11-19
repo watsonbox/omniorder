@@ -2,34 +2,33 @@ require 'spec_helper'
 
 describe Omniorder::ImportStrategy::Groupon do
   let(:import) { Omniorder::Import.new }
-  let(:strategy) do
-    Omniorder::ImportStrategy::Groupon.new(
-      import,
-      :supplier_id => '1',
-      :access_token => 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT'
-    )
-  end
+  let(:strategy) { Omniorder::ImportStrategy::Groupon.new(import, strategy_options) }
+  let(:strategy_options) { { supplier_id: '1', access_token: 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT' } }
 
   before do
     stub_request(
       :get,
-      strategy.get_orders_url
+      "https://scm.commerceinterface.com/api/v2/get_orders?supplier_id=1&token=xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT"
     ).to_return(
-      :body => File.new('spec/assets/imports/groupon/get_orders.json'),
-      :status => 200
+      body: File.new('spec/assets/imports/groupon/get_orders.json'),
+      status: 200
     )
   end
 
-  it 'raises an exception unless a supplier_id option is supplied' do
-    expect {
-      Omniorder::ImportStrategy::Groupon.new(import, :access_token => 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT')
-    }.to raise_exception "Omniorder::ImportStrategy::Groupon requires a supplier_id"
+  context 'no supplier_id is supplied' do
+    let(:strategy_options) { { access_token: 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT' } }
+
+    it 'raises an exception' do
+      expect { strategy }.to raise_exception "Omniorder::ImportStrategy::Groupon requires a supplier_id"
+    end
   end
 
-  it 'raises an exception unless an access_token option is supplied' do
-    expect {
-      Omniorder::ImportStrategy::Groupon.new(import, :supplier_id => '1')
-    }.to raise_exception "Omniorder::ImportStrategy::Groupon requires an access_token"
+  context 'no access_token is supplied' do
+    let(:strategy_options) { { supplier_id: '1' } }
+
+    it 'raises an exception' do
+      expect { strategy }.to raise_exception "Omniorder::ImportStrategy::Groupon requires an access_token"
+    end
   end
 
   it 'imports orders with products and a customer' do
@@ -55,5 +54,35 @@ describe Omniorder::ImportStrategy::Groupon do
     expect(customer.address4).to eq("KENT")
     expect(customer.postcode).to eq("SOME ZIP")
     expect(customer.country).to eq("UK")
+  end
+
+  context 'the mark_exported option is set' do
+    let(:strategy_options) { { supplier_id: '1', access_token: 'xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT', mark_exported: true } }
+
+    let(:mark_exported_result) { '{ "success": true }' }
+    let!(:mark_exported_stub) do
+      stub_request(
+        :post,
+        "https://scm.commerceinterface.com/api/v2/mark_exported?supplier_id=1&token=xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT&ci_lineitem_ids=[54553920,54553921]"
+      ).to_return(
+        body: mark_exported_result,
+        status: 200
+      )
+    end
+
+    it 'marks orders as exported when the order handler is truthy' do
+      strategy.import_orders { |o| true if o.order_number == "FFB7A68990" }
+      expect(mark_exported_stub).to have_been_requested.once
+    end
+
+    context "mark exported API call fails" do
+      let(:mark_exported_result) { '{ "success": false }' }
+
+      it 'raises an exception' do
+        expect {
+          strategy.import_orders { |o| true if o.order_number == "FFB7A68990" }
+        }.to raise_exception "Failed to mark Groupon order #FFB7A68990 as exported"
+      end
+    end
   end
 end
