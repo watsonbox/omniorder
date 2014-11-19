@@ -1,6 +1,7 @@
 # Omniorder
 
 [![Build Status](http://img.shields.io/travis/watsonbox/omniorder.svg?style=flat)](https://travis-ci.org/watsonbox/omniorder)
+[![Coverage Status](https://img.shields.io/coveralls/watsonbox/omniorder.svg?style=flat)](https://coveralls.io/r/watsonbox/omniorder)
 
 Import online orders from various channels for fulfillment.
 
