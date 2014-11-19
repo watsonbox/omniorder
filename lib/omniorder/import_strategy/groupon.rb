@@ -33,7 +33,7 @@ module Omniorder
       private
 
       def create_order(order_info)
-        order = import.build_order(
+        order = import.generate_order(
           :order_number => order_info['orderid'],
           :total_price => order_info['amount']['total'].to_f,
           :date => DateTime.strptime(order_info['date'], '%m/%d/%Y %I:%M%p UTC')
@@ -50,7 +50,7 @@ module Omniorder
 
       def create_customer(order, customer_info)
         # NOTE: Can't find existing customer as no username or email given
-        order.build_customer(
+        order.generate_customer(
           :name => customer_info['name'],
           :phone => customer_info['phone'],
           :address1 => customer_info['address1'],
