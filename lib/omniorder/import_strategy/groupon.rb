@@ -5,7 +5,6 @@ module Omniorder
     class Groupon < Base
       API_URL = "https://scm.commerceinterface.com/api/v2/"
 
-      attr_accessor :options
       attr_accessor :supplier_id, :access_token
 
       def initialize(import, options = {})
