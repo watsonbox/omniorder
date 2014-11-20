@@ -86,7 +86,15 @@ module Omniorder
         http = Net::HTTP.new(uri.host, 443)
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        http.request((type == :post ? Net::HTTP::Post : Net::HTTP::Get).new(uri.request_uri)).body
+
+        # Send post request params in body
+        if type == :get
+          http.request(Net::HTTP::Get.new(uri.request_uri)).body
+        else
+          request = Net::HTTP::Post.new(uri.path)
+          request.body = uri.query
+          http.request(request).body
+        end
       end
     end
   end

@@ -63,7 +63,9 @@ describe Omniorder::ImportStrategy::Groupon do
     let!(:mark_exported_stub) do
       stub_request(
         :post,
-        "https://scm.commerceinterface.com/api/v2/mark_exported?supplier_id=1&token=xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT&ci_lineitem_ids=[54553920,54553921]"
+        "https://scm.commerceinterface.com/api/v2/mark_exported"
+      ).with(
+        body: "supplier_id=1&token=xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT&ci_lineitem_ids=[54553920,54553921]"
       ).to_return(
         body: mark_exported_result,
         status: 200
