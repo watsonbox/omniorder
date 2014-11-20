@@ -27,7 +27,7 @@ module Omniorder
             result = Crack::JSON.parse do_request(mark_exported_url(order_info), :post)
 
             unless result['success']
-              raise "Failed to mark Groupon order ##{order_info['orderid']} as exported"
+              raise "Failed to mark Groupon order ##{order_info['orderid']} as exported (#{result['reason']})"
             end
           end
         end

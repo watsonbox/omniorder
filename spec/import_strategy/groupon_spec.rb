@@ -78,12 +78,12 @@ describe Omniorder::ImportStrategy::Groupon do
     end
 
     context "mark exported API call fails" do
-      let(:mark_exported_result) { '{ "success": false }' }
+      let(:mark_exported_result) { '{ "success": false, "reason": "Something went wrong" }' }
 
       it 'raises an exception' do
         expect {
           strategy.import_orders { |o| true if o.order_number == "FFB7A68990" }
-        }.to raise_exception "Failed to mark Groupon order #FFB7A68990 as exported"
+        }.to raise_exception "Failed to mark Groupon order #FFB7A68990 as exported (Something went wrong)"
       end
     end
   end
