@@ -57,7 +57,7 @@ module Omniorder
           order.add_product_by_code(line_item_info['sku'].to_s, line_item_info['quantity'].to_i)
         end
 
-        order
+        after_build_order order, order_info
       end
 
       def create_customer(order, customer_info)
