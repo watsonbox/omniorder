@@ -54,7 +54,11 @@ module Omniorder
         order.customer = create_customer(order, order_info['customer'])
 
         order_info['line_items'].each do |line_item_info|
-          order.add_product_by_code(line_item_info['sku'].to_s, line_item_info['quantity'].to_i)
+          order.add_product_by_code(
+            line_item_info['sku'].to_s,
+            line_item_info['quantity'].to_i,
+            line_item_info['ci_lineitemid'].to_i
+          )
         end
 
         after_build_order order, order_info

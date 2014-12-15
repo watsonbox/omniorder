@@ -44,6 +44,7 @@ describe Omniorder::ImportStrategy::Groupon do
     order_product = order.order_products.first
     expect(order_product.quantity).to eq(3)
     expect(order_product.product.code).to eq('03658246')
+    expect(order_product.external_reference).to eq(54553918)
 
     customer = order.customer
     expect(customer.name).to eq("SOME BODY HERE")

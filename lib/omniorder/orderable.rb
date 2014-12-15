@@ -7,19 +7,23 @@ module Omniorder
       Omniorder.customer_type.new(attributes)
     end
 
-    def add_product(product, quantity = 1)
+    def add_product(product, quantity = 1, external_reference = nil)
       order_product = order_products.to_a.find { |op| op.product == product }
 
       if order_product.nil?
-        order_products << Omniorder.order_product_type.new(:product => product, :quantity => quantity)
+        order_products << Omniorder.order_product_type.new(
+          :product => product,
+          :quantity => quantity,
+          :external_reference => external_reference
+        )
       else
         order_product.quantity += quantity
       end
     end
 
-    def add_product_by_code(code, quantity = 1)
+    def add_product_by_code(code, quantity = 1, external_reference = nil)
       Omniorder.product_type.find_by_code(code).tap do |product|
-        add_product product, quantity unless product.nil?
+        add_product product, quantity, external_reference unless product.nil?
       end
     end
 
