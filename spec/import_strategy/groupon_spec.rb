@@ -122,16 +122,14 @@ describe Omniorder::ImportStrategy::Groupon do
     end
 
     it 'does nothing when an order has no shipping_reference' do
-      orders = [
-        Omniorder::Order.new(
-          :order_number => 'ORD1',
-          :external_carrier_reference => '4SL',
-          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553918')]
-        )
-      ]
+      order = Omniorder::Order.new(
+        :order_number => 'ORD1',
+        :external_carrier_reference => '4SL',
+        :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553918')]
+      )
 
       # Exception would be raised on request as single-order stub does not exist
-      strategy.update_order_tracking!(orders)
+      strategy.update_order_tracking!(order)
     end
 
     it 'raises an exception when an order has no external_carrier_reference' do

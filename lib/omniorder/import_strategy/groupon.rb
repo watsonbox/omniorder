@@ -36,7 +36,7 @@ module Omniorder
       end
 
       def update_order_tracking!(orders)
-        orders = orders.select do |order|
+        orders = [*orders].select do |order|
           if order.respond_to?(:shipping_reference) && !order.shipping_reference.nil?
             if order.external_carrier_reference.nil? || order.external_carrier_reference == ''
               raise "Cannot send tracking info for Groupon order ##{order.order_number} since it has no external_carrier_reference"
@@ -55,7 +55,12 @@ module Omniorder
         end
 
         if result && result['success'].nil?
-          raise "Failed to update Groupon tracking data (#{result['reason']})"
+          # Include order number too if there is only one order
+          if orders.count == 1
+            raise "Failed to update Groupon tracking data for order ##{orders.first.order_number} (#{result['reason']})"
+          else
+            raise "Failed to update Groupon tracking data (#{result['reason']})"
+          end
         end
       end
 
