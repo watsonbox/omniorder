@@ -88,4 +88,37 @@ describe Omniorder::ImportStrategy::Groupon do
       end
     end
   end
+
+  describe '#update_order_tracking!' do
+    let(:tracking_notification_result) { '{ "success": true }' }
+    let!(:tracking_notification_stub) do
+      stub_request(
+        :post,
+        "https://scm.commerceinterface.com/api/v2/tracking_notification"
+      ).with(
+        body: "supplier_id=1&token=xYRPKcoakMoiRzWgKLV5TqPSdNAaZQT&tracking_info=[{\"carrier\":\"4SL\",\"ci_lineitem_id\":54553918,\"tracking\":\"SR123451\"},{\"carrier\":\"DHL\",\"ci_lineitem_id\":54553920,\"tracking\":\"SR123452\"}]"
+      ).to_return(
+        body: tracking_notification_result,
+        status: 200
+      )
+    end
+
+    it 'updates Groupon tracking information from orders' do
+      orders = [
+        Omniorder::Order.new(
+          :shipping_reference => 'SR123451',
+          :external_carrier_reference => '4SL',
+          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553918')]
+        ),
+        Omniorder::Order.new(
+          :shipping_reference => 'SR123452',
+          :external_carrier_reference => 'DHL',
+          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553920')]
+        )
+      ]
+
+      strategy.update_order_tracking!(orders)
+      expect(tracking_notification_stub).to have_been_requested.once
+    end
+  end
 end

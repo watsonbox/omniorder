@@ -3,6 +3,8 @@ module Omniorder
     # Groupon Import Strategy
     # See: https://scm.commerceinterface.com/api-doc/v2/
     class Groupon < Base
+      require 'json'
+
       API_URL = "https://scm.commerceinterface.com/api/v2/"
 
       attr_accessor :supplier_id, :access_token
@@ -33,6 +35,18 @@ module Omniorder
         end
       end
 
+      def update_order_tracking!(orders)
+        orders = orders.select do |order|
+          order.respond_to?(:shipping_reference) && !order.shipping_reference.nil?
+        end
+
+        result = Crack::JSON.parse do_request(tracking_notification_url(orders), :post)
+
+        unless result['success']
+          raise "Failed to update Groupon tracking data (#{result['reason']})"
+        end
+      end
+
       def get_orders_url
         URI.join(API_URL, "get_orders?supplier_id=#{supplier_id}&token=#{access_token}")
       end
@@ -40,6 +54,20 @@ module Omniorder
       def mark_exported_url(order_info)
         lids = order_info['line_items'].map { |li| li["ci_lineitemid"] }
         URI.join(API_URL, "mark_exported?supplier_id=#{supplier_id}&token=#{access_token}&ci_lineitem_ids=[#{lids.join(',')}]")
+      end
+
+      def tracking_notification_url(orders)
+        tracking_info = orders.map do |order|
+          order.order_products.map do |line_item|
+            {
+              "carrier" => order.external_carrier_reference,
+              "ci_lineitem_id" => line_item.external_reference.to_i,
+              "tracking" => order.shipping_reference
+            }
+          end
+        end.flatten
+
+        File.join(API_URL, "tracking_notification?supplier_id=#{supplier_id}&token=#{access_token}&tracking_info=#{tracking_info.to_json}")
       end
 
       private
@@ -86,7 +114,8 @@ module Omniorder
       private
 
       def do_request(url, type = :get)
-        uri = URI(url)
+        host_and_path, query = url.to_s.split('?')
+        uri = URI(type == :get ? url : host_and_path)
         http = Net::HTTP.new(uri.host, 443)
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
@@ -95,8 +124,8 @@ module Omniorder
         if type == :get
           http.request(Net::HTTP::Get.new(uri.request_uri)).body
         else
-          request = Net::HTTP::Post.new(uri.path)
-          request.body = uri.query
+          request = Net::HTTP::Post.new(host_and_path)
+          request.body = query
           http.request(request).body
         end
       end
