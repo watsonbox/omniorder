@@ -120,5 +120,55 @@ describe Omniorder::ImportStrategy::Groupon do
       strategy.update_order_tracking!(orders)
       expect(tracking_notification_stub).to have_been_requested.once
     end
+
+    it 'does nothing when an order has no shipping_reference' do
+      orders = [
+        Omniorder::Order.new(
+          :order_number => 'ORD1',
+          :external_carrier_reference => '4SL',
+          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553918')]
+        )
+      ]
+
+      # Exception would be raised on request as single-order stub does not exist
+      strategy.update_order_tracking!(orders)
+    end
+
+    it 'raises an exception when an order has no external_carrier_reference' do
+      orders = [
+        Omniorder::Order.new(
+          :order_number => 'ORD1',
+          :shipping_reference => 'SR123451',
+          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553918')]
+        ),
+        Omniorder::Order.new(
+          :shipping_reference => 'SR123452',
+          :external_carrier_reference => 'DHL',
+          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553920')]
+        )
+      ]
+
+      expect { strategy.update_order_tracking!(orders) }.
+        to raise_exception "Cannot send tracking info for Groupon order #ORD1 since it has no external_carrier_reference"
+    end
+
+    it 'raises an exception when and order line item has no external_reference' do
+      orders = [
+        Omniorder::Order.new(
+          :order_number => 'ORD1',
+          :shipping_reference => 'SR123451',
+          :external_carrier_reference => '4SL',
+          :order_products => [Omniorder::OrderProduct.new]
+        ),
+        Omniorder::Order.new(
+          :shipping_reference => 'SR123452',
+          :external_carrier_reference => 'DHL',
+          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553920')]
+        )
+      ]
+
+      expect { strategy.update_order_tracking!(orders) }.
+        to raise_exception "Cannot send tracking info for Groupon order #ORD1 since a line item has no external_reference"
+    end
   end
 end

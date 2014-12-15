@@ -37,12 +37,24 @@ module Omniorder
 
       def update_order_tracking!(orders)
         orders = orders.select do |order|
-          order.respond_to?(:shipping_reference) && !order.shipping_reference.nil?
+          if order.respond_to?(:shipping_reference) && !order.shipping_reference.nil?
+            if order.external_carrier_reference.nil? || order.external_carrier_reference == ''
+              raise "Cannot send tracking info for Groupon order ##{order.order_number} since it has no external_carrier_reference"
+            end
+
+            if order.order_products.any? { |op| op.external_reference.to_i == 0 }
+              raise "Cannot send tracking info for Groupon order ##{order.order_number} since a line item has no external_reference"
+            end
+
+            true
+          end
         end
 
-        result = Crack::JSON.parse do_request(tracking_notification_url(orders), :post)
+        unless orders.empty?
+          result = Crack::JSON.parse do_request(tracking_notification_url(orders), :post)
+        end
 
-        unless result['success']
+        if result && result['success'].nil?
           raise "Failed to update Groupon tracking data (#{result['reason']})"
         end
       end
