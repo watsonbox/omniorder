@@ -108,12 +108,12 @@ describe Omniorder::ImportStrategy::Groupon do
         Omniorder::Order.new(
           :shipping_reference => 'SR123451',
           :external_carrier_reference => '4SL',
-          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553918')]
+          :external_data => { :line_item_ids => [54553918] }
         ),
         Omniorder::Order.new(
           :shipping_reference => 'SR123452',
           :external_carrier_reference => 'DHL',
-          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553920')]
+          :external_data => { :line_item_ids => [54553920] }
         )
       ]
 
@@ -137,12 +137,12 @@ describe Omniorder::ImportStrategy::Groupon do
         Omniorder::Order.new(
           :order_number => 'ORD1',
           :shipping_reference => 'SR123451',
-          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553918')]
+          :external_data => { :line_item_ids => [54553918] }
         ),
         Omniorder::Order.new(
           :shipping_reference => 'SR123452',
           :external_carrier_reference => 'DHL',
-          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553920')]
+          :external_data => { :line_item_ids => [54553920] }
         )
       ]
 
@@ -150,23 +150,22 @@ describe Omniorder::ImportStrategy::Groupon do
         to raise_exception "Cannot send tracking info for Groupon order #ORD1 since it has no external_carrier_reference"
     end
 
-    it 'raises an exception when and order line item has no external_reference' do
+    it 'raises an exception when an order does not have appropriate external data' do
       orders = [
         Omniorder::Order.new(
           :order_number => 'ORD1',
           :shipping_reference => 'SR123451',
-          :external_carrier_reference => '4SL',
-          :order_products => [Omniorder::OrderProduct.new]
+          :external_carrier_reference => '4SL'
         ),
         Omniorder::Order.new(
           :shipping_reference => 'SR123452',
           :external_carrier_reference => 'DHL',
-          :order_products => [Omniorder::OrderProduct.new(:external_reference => '54553920')]
+          :external_data => { :line_item_ids => [54553920] }
         )
       ]
 
       expect { strategy.update_order_tracking!(orders) }.
-        to raise_exception "Cannot send tracking info for Groupon order #ORD1 since a line item has no external_reference"
+        to raise_exception "Cannot send tracking info for Groupon order #ORD1 since there is no line item external data"
     end
   end
 end

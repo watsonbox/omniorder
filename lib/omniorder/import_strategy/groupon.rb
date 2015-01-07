@@ -42,8 +42,8 @@ module Omniorder
               raise "Cannot send tracking info for Groupon order ##{order.order_number} since it has no external_carrier_reference"
             end
 
-            if order.order_products.any? { |op| op.external_reference.to_i == 0 }
-              raise "Cannot send tracking info for Groupon order ##{order.order_number} since a line item has no external_reference"
+            if order.external_data.nil? || order.external_data[:line_item_ids].nil? || order.external_data[:line_item_ids].empty?
+              raise "Cannot send tracking info for Groupon order ##{order.order_number} since there is no line item external data"
             end
 
             true
@@ -75,10 +75,10 @@ module Omniorder
 
       def tracking_notification_url(orders)
         tracking_info = orders.map do |order|
-          order.order_products.map do |line_item|
+          order.external_data[:line_item_ids].map do |line_item_id|
             {
               "carrier" => order.external_carrier_reference,
-              "ci_lineitem_id" => line_item.external_reference.to_i,
+              "ci_lineitem_id" => line_item_id,
               "tracking" => order.shipping_reference
             }
           end
@@ -93,7 +93,8 @@ module Omniorder
         order = import.generate_order(
           :order_number => order_info['orderid'],
           :total_price => order_info['amount']['total'].to_f,
-          :date => DateTime.strptime(order_info['date'], '%m/%d/%Y %I:%M%p UTC')
+          :date => DateTime.strptime(order_info['date'], '%m/%d/%Y %I:%M%p UTC'),
+          :external_data => { :line_item_ids => order_info['line_items'].map { |li| li['ci_lineitemid'] } }
         )
 
         order.customer = create_customer(order, order_info['customer'])
