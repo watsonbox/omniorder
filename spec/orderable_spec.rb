@@ -44,6 +44,15 @@ describe Omniorder::Orderable do
     end
   end
 
+  describe '#unique_product_count' do
+    it 'is the number of order_product lines' do
+      order.add_product_by_code('CODE1', 10)
+      order.add_product_by_code('CODE2', 6)
+
+      expect(order.unique_product_count).to eq(2)
+    end
+  end
+
   describe '#product_list' do
     it 'is a human-readable string representing order products' do
       order.add_product_by_code('CODE1', 10)

@@ -31,6 +31,10 @@ module Omniorder
       order_products.inject(0) { |sum, op| sum + op.quantity }
     end
 
+    def unique_product_count
+      order_products.count
+    end
+
     # Human-readable string representing order products
     def product_list
       order_products.sort.map(&:to_s).join('/')
